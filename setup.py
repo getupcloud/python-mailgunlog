@@ -4,7 +4,7 @@ import mailgunlog
 setuptools.setup(name='mailgunlog',
                  version=mailgunlog.__version__,
                  description='Mailgun Log',
-                 long_description=open('README.md').read().strip(),
+                 long_description='Python Package to retrieve Mailgun logs for a given domain.',
                  author='Getup Cloud',
                  author_email='mateus.caruccio@getupcloud.com',
                  url='https://github.com/getupcloud/python-mailgunlog',

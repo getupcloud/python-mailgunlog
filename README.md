@@ -8,7 +8,7 @@ Python Package to retrieve Mailgun logs for a given domain.
 ## Install
 
 ```
-pip install python-mailgunlog
+pip install mailgunlog
 ```
 
 ## Usage
