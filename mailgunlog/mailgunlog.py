@@ -52,7 +52,7 @@ def strdate_to_rfc2822(value=None, midnight=False):
     timestamp = time.mktime(date.utctimetuple())
     return date.strftime('%a, %d %b %Y %H:%M:%S -0000')
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='Retrieve Mailgun event logs.')
     parser.add_argument('-b', '--begin',   dest='begin',                        default=None,  help='Begin date (YYYY/MM/DD)')
     parser.add_argument('-e', '--end'  ,   dest='end',                          default=None,  help='End date (YYYY/MM/DD)')
@@ -69,7 +69,6 @@ if __name__ == '__main__':
 
     begin = strdate_to_rfc2822(args.begin)
     end   = strdate_to_rfc2822(args.end, midnight=True) if args.end else None
-    print (begin, end)
     sys.exit()
     if args.begin:
         jsondata['begin'] = begin
@@ -89,3 +88,6 @@ if __name__ == '__main__':
 
     if args.json:
         print(json.dumps(jsondata, indent=3))
+
+if __name__ == '__main__':
+    main()
