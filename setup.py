@@ -11,7 +11,7 @@ setuptools.setup(name='mailgunlog',
                  packages=['mailgunlog'],
                  py_modules=['mailgunlog'],
                  install_requires=['requests>=2.0.0'],
-                 license='Apache License 2.0',
+                 license='Apache Software License',
                  zip_safe=False,
                  entry_points={
                      'console_scripts': [
@@ -24,14 +24,14 @@ setuptools.setup(name='mailgunlog',
                      #   3 - Alpha
                      #   4 - Beta
                      #   5 - Production/Stable
-                     'Development Status :: 3 - Beta',
+                     'Development Status :: 4 - Beta',
 
                      # Indicate who your project is intended for
                      'Intended Audience :: Developers',
                      'Topic :: Software Development :: Build Tools',
 
                      # Pick your license as you wish (should match "license" above)
-                      'License :: OSI Approved :: Apache License 2.0',
+                      'License :: OSI Approved :: Apache Software License',
 
                      # Specify the Python versions you support here. In particular, ensure
                      # that you indicate whether you support Python 2, Python 3 or both.
