@@ -69,7 +69,6 @@ def main():
 
     begin = strdate_to_rfc2822(args.begin)
     end   = strdate_to_rfc2822(args.end, midnight=True) if args.end else None
-    sys.exit()
     if args.begin:
         jsondata['begin'] = begin
     if args.end:
