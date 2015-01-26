@@ -1,5 +1,5 @@
-python-package-boilerplate
-==========================
+python-mailgun
+==============
 
 [![Build Status](https://travis-ci.org/getupcloud/python-mailgunlog.png?branch=master)](https://travis-ci.org/getupcloud/python-mailgunlog)
 
