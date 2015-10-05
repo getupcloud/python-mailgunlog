@@ -13,13 +13,35 @@ pip install mailgunlog
 
 ## Usage
 
-As a command line tool (use -h for help)
+### Command line tool
+
+As a command line tool (use -h for help):
 
 ```
 $ mailgunlog <domain> <api-key> --begin 2015/01/01 --end 2015/01/31 --json
 ```
 
-As a python module
+If your prefer, call it as an executable module:
+
+```
+$ python -m mailgunlog <domain> <api-key> --begin 2015/01/01 --end 2015/01/31
+```
+
+In order to keep it a little bit secure, define your API Key and Domain from environment variables:
+
+```
+$ export MAILGUN_DOMAIN=example.com
+$ export MAILGUN_API_KEY=<mailgunapi-key-goes-here>
+
+Now it's possible to dump logs from an specific number of days ago:
+
+```
+$ python -m mailgunlog <domain> <api-key> --days 5
+```
+
+### Module
+
+You can use it inside your project, as a python module:
 
 ```python
 import mailgunlog
