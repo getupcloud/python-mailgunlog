@@ -8,7 +8,7 @@ setuptools.setup(name='mailgunlog',
                  author_email='mateus.caruccio@getupcloud.com',
                  url='https://github.com/getupcloud/python-mailgunlog',
                  packages=['mailgunlog'],
-                 install_requires=['requests>=2.0.0'],
+                 install_requires=['requests>=2.0.0', 'python-dateutil>=2.2'],
                  license='Apache Software License',
                  entry_points={
                      'console_scripts': [
