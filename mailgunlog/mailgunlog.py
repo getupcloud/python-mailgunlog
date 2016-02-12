@@ -8,10 +8,15 @@ import argparse
 import time
 from datetime import datetime, date as _date
 from dateutil.relativedelta import relativedelta
-from email.Utils import formatdate
+try:
+    from email.Utils import formatdate
+except ImportError: #py3
+    from email.utils import formatdate
+
 import requests
 
-def logs(domain, api_key, begin=None, end=None):
+
+def logs(domain, api_key, begin=None, end=None, verbose=False):
     url = 'https://api.mailgun.net/v2/%s/events' % domain
     params = {
         'begin': begin or formatdate(),
@@ -21,10 +26,18 @@ def logs(domain, api_key, begin=None, end=None):
     init = True
     while True:
         if params:
-            req = requests.get(url=url, auth=('api', api_key), params=params)
+            response = requests.get(url=url, auth=('api', api_key), params=params)
         else:
-            req = requests.get(url=url, auth=('api', api_key))
-        data = req.json()
+            response = requests.get(url=url, auth=('api', api_key))
+
+        if verbose:
+            print('# {0} {1}'.format(response.request.method, response.request.url), file=sys.stderr)
+            print('# STATUS CODE: {0}'.format(response.status_code), file=sys.stderr)
+
+        if not response.ok:
+            raise ValueError('Invalid status_code: {0}'.format(response.status_code))
+
+        data = response.json()
 
         items = data['items']
         for record in items:
@@ -42,6 +55,7 @@ def logs(domain, api_key, begin=None, end=None):
             url = data['paging']['next']
         init = False
 
+
 def strdate_to_rfc2822(value=None, midnight=False, now=False):
     '''Convert date in format YYYY/MM/DD to RFC2822 format.
         If value is None, return current utc time.
@@ -50,7 +64,7 @@ def strdate_to_rfc2822(value=None, midnight=False, now=False):
         raise ValueError('Choose one of "midnight" or "now"')
 
     strdate =  value if value else datetime.utcnow().strftime('%Y/%m/%d')
-    datetimetuple = map(int, strdate.split('/'))
+    datetimetuple = list(map(int, strdate.split('/')))
     if midnight:
         datetimetuple += (0, 0, 0)
     elif now:
@@ -62,6 +76,7 @@ def strdate_to_rfc2822(value=None, midnight=False, now=False):
     date = datetime(*datetimetuple)
     timestamp = time.mktime(date.utctimetuple())
     return date.strftime('%a, %d %b %Y %H:%M:%S -0000')
+
 
 def main():
     parser = argparse.ArgumentParser(description='Retrieve Mailgun event logs.')
@@ -89,6 +104,11 @@ def main():
                         action='store_true',
                         default=False)
 
+    parser.add_argument('-V', '--version', help='Print version to stdout and exit',
+                        dest='version',
+                        action='store_true',
+                        default=False)
+
     parser.add_argument('domain', help='Domain registered on Mailgun (or set env var MAILGUN_DOMAIN)',
                         metavar='domain',
                         type=str,
@@ -102,6 +122,11 @@ def main():
                         default=None)
 
     args = parser.parse_args()
+
+    if args.version:
+        from . import __title__, __version__
+        print('{0}-{1}'.format(__title__, __version__))
+        sys.exit(0)
 
     jsondata = { 'logs': [] }
 
@@ -122,7 +147,7 @@ def main():
     # parse api domain and credentials
     try:
         if args.domain:
-          domain = args.domain[0]
+          domain = args.domain
         else:
           domain = os.environ['MAILGUN_DOMAIN']
         jsondata['domain'] = domain
@@ -132,7 +157,7 @@ def main():
 
     try:
         if args.api_key:
-          api_key = args.api_key[0]
+          api_key = args.api_key
         else:
           api_key = os.environ['MAILGUN_API_KEY']
     except KeyError:
@@ -140,27 +165,28 @@ def main():
         sys.exit(1)
 
     if args.verbose:
-        print('# BEGIN DATE: %s' % begin, file=sys.stderr)
-        print('# END DATE: %s' % end, file=sys.stderr)
+        print('# BEGIN DATE: {}'.format(begin), file=sys.stderr)
+        print('# END DATE: {}'.format(end), file=sys.stderr)
         sys.stderr.flush()
 
     # main loop
     ###########
 
-    for log in logs(domain=domain, api_key=api_key, begin=begin, end=end):
+    for log in logs(domain=domain, api_key=api_key, begin=begin, end=end, verbose=args.verbose):
         if args.json:
             jsondata['logs'].append(log)
         else:
-            status = log['event'].upper()
+            status = log.get('event', '').upper()
             ok = status in [ 'ACCEPTED', 'DELIVERED' ]
-            line = '[%s] %s <%s>' % (datetime.utcfromtimestamp(log['timestamp']), status , log['recipient'])
+            line = '[%s] %s <%s>' % (datetime.utcfromtimestamp(log.get('timestamp', '')), status , log.get('recipient', ''))
             if not ok:
-                line += ' (%s)' % (log['delivery-status']['description'] or log['delivery-status']['message'])
-            line += ': ' + log['message']['headers']['subject']
+                line += ' (%s)' % (log.get('delivery-status', {}).get('description', '') or log.get('delivery-status', {}).get('message', ''))
+            line += ': %s' % log.get('message', {}).get('headers', {}).get('subject', '')
             print(line)
 
     if args.json:
         print(json.dumps(jsondata, indent=3))
+
 
 if __name__ == '__main__':
     main()

@@ -1,8 +1,9 @@
 import setuptools
+import mailgunlog
 
-setuptools.setup(name='mailgunlog',
-                 version='0.0.3',
-                 description='Mailgun Log',
+setuptools.setup(name=mailgunlog.__title__,
+                 version=mailgunlog.__version__,
+                 description=mailgunlog.__doc__,
                  long_description='Python Package to retrieve Mailgun logs for a given domain.',
                  author='Getup Cloud',
                  author_email='mateus.caruccio@getupcloud.com',
@@ -33,7 +34,6 @@ setuptools.setup(name='mailgunlog',
                      # Specify the Python versions you support here. In particular, ensure
                      # that you indicate whether you support Python 2, Python 3 or both.
                      'Programming Language :: Python :: 2',
-                     'Programming Language :: Python :: 2.6',
-                     'Programming Language :: Python :: 2.7',
+                     'Programming Language :: Python :: 3',
                  ]
 )
